@@ -209,8 +209,10 @@
         <form onsubmit="handleHrLogin(event)" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1.5">كود دخول العضو (PIN)</label>
-              <input id="m-pin" type="text" placeholder="يُترك فارغاً ليكون نفس رقم العضوية" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
+              <label class="block text-sm font-bold text-slate-200 mb-1.5">نطاق المحافظة</label>
+              <select id="login-hr-gov" class="glass-input w-full px-3.5 py-3 rounded-2xl text-sm text-white">
+                <option value="ALL">المركزية (جميع المحافظات)</option>
+              </select>
             </div>
             <div>
               <label class="block text-sm font-bold text-slate-200 mb-1.5">الصلاحية الإدارية</label>
@@ -262,7 +264,7 @@
 
             <h2 id="m-profile-name" class="text-2xl sm:text-3xl font-black text-white">---</h2>
 
-            <!-- Leadership Hierarchy Info (Matches Excel Sheet Header) -->
+            <!-- Leadership Hierarchy Info -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 text-xs text-slate-300">
               <div class="bg-white/5 px-3 py-2 rounded-xl border border-white/5">
                 <span class="text-slate-400 block">مسؤول التقييم للعضو:</span>
@@ -322,7 +324,7 @@
             <p class="text-xs text-slate-400 mt-0.5">يتم حساب النسب تلقائياً من مجموع الأسابيع الأربعة لكل معيار</p>
           </div>
 
-          <!-- Progress Bars for the 6 Core Criteria -->
+          <!-- Progress Bars for the Core Criteria -->
           <div id="criteria-progress-list" class="space-y-3.5"></div>
 
           <!-- Automated Strength & Focus Alerts -->
@@ -600,8 +602,8 @@
               <input id="m-id" type="text" required placeholder="مثال: 1001" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1.5">كود دخول العضو (PIN) *</label>
-              <input id="m-pin" type="text" required placeholder="كود سري للعضو" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
+              <label class="block text-xs font-bold text-slate-300 mb-1.5">كود دخول العضو (PIN)</label>
+              <input id="m-pin" type="text" placeholder="يُترك فارغاً ليكون نفس رقم العضوية" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1.5">اسم العضو *</label>
@@ -1171,7 +1173,8 @@
 
     function handleHrLogin(e) {
       e.preventDefault();
-      const govScope = document.getElementById('login-hr-gov').value;
+      const govEl = document.getElementById('login-hr-gov');
+      const govScope = govEl ? govEl.value : 'ALL';
       const role = document.getElementById('login-hr-role').value;
       const name = document.getElementById('login-hr-name').value.trim();
       const pass = document.getElementById('login-hr-pass').value.trim();
@@ -1532,6 +1535,12 @@
         if (mGov) mGov.value = state.currentUser.govScope;
       }
 
+      if (state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
+        const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
+        const mComm = document.getElementById('m-committee');
+        if (mComm) mComm.value = targetComm;
+      }
+
       updatePendingAppealsBadge();
       switchHrTab('upload');
     }
@@ -1890,10 +1899,16 @@
 
     // HR Analytics, Filters & Excel Export
     function getScopedEvaluations() {
-      if (state.currentUser && state.currentUser.govScope && state.currentUser.govScope !== 'ALL') {
-        return state.evaluations.filter(e => e.governorate === state.currentUser.govScope);
+      if (!state.currentUser) return state.evaluations;
+      let list = state.evaluations;
+      if (state.currentUser.govScope && state.currentUser.govScope !== 'ALL') {
+        list = list.filter(e => e.governorate === state.currentUser.govScope);
       }
-      return state.evaluations;
+      if (state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
+        const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
+        list = list.filter(e => e.committee === targetComm);
+      }
+      return list;
     }
 
     function populateHrFilters() {
@@ -1912,7 +1927,13 @@
         govSelect.innerHTML = `<option value="ALL">كل المحافظات</option>` + govs.map(g => `<option value="${g}">${g}</option>`).join('');
       }
 
-      commSelect.innerHTML = `<option value="ALL">كل اللجان</option>` + committees.map(c => `<option value="${c}">${c}</option>`).join('');
+      if (state.currentUser && state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
+        const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
+        commSelect.innerHTML = `<option value="${targetComm}">${targetComm}</option>`;
+      } else {
+        commSelect.innerHTML = `<option value="ALL">كل اللجان</option>` + committees.map(c => `<option value="${c}">${c}</option>`).join('');
+      }
+
       monthSelect.innerHTML = `<option value="ALL">كل الشهور</option>` + months.map(m => `<option value="${m}">${m}</option>`).join('');
     }
 
@@ -2081,12 +2102,19 @@
       showToast('تم تصدير التقرير بنجاح!', 'success');
     }
 
-    // HR Appeals & Audit Log Rendering (With Full Delete Appeal Capability)
+    // HR Appeals & Audit Log Rendering
     function renderHrAppealsAndLogs() {
       const appealsContainer = document.getElementById('hr-appeals-list');
       const scopedAppeals = state.appeals.filter(a => {
-        if (!state.currentUser || state.currentUser.govScope === 'ALL') return true;
-        return !a.governorate || a.governorate === state.currentUser.govScope;
+        if (!state.currentUser) return true;
+        if (state.currentUser.govScope && state.currentUser.govScope !== 'ALL' && a.governorate && a.governorate !== state.currentUser.govScope) {
+          return false;
+        }
+        if (state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
+          const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
+          if (a.committee && a.committee !== targetComm) return false;
+        }
+        return true;
       });
 
       if (scopedAppeals.length === 0) {
