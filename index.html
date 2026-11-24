@@ -71,6 +71,12 @@
       box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
     }
 
+    .glass-input:disabled, select:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      background: rgba(15, 23, 42, 0.85);
+    }
+
     .custom-scroll::-webkit-scrollbar {
       height: 6px;
       width: 6px;
@@ -170,7 +176,7 @@
           متابعة الأداء والتقييم الشهري
         </h2>
         <p class="text-sm text-slate-400 mt-2">
-          سجّل الدخول برقم العضوية للاطلاع على تقييمك التفصيلي، أو ادخل كمسؤول موارد بشرية لإدارة التقييمات.
+          سجّل الدخول باسمك ورقم عضويتك للاطلاع على تقييمك التفصيلي، أو ادخل كمسؤول موارد بشرية لإدارة لجنتك.
         </p>
       </div>
 
@@ -184,18 +190,18 @@
         </button>
       </div>
 
-      <!-- Member Login Card -->
+      <!-- Member Login Card (Name + Member ID Only) -->
       <div id="member-login-card" class="glass-panel rounded-3xl p-6 sm:p-8">
         <form onsubmit="handleMemberLogin(event)" class="space-y-4">
           <div>
-            <label class="block text-sm font-bold text-slate-200 mb-1.5">رقم العضوية (Member ID)</label>
-            <input id="login-member-id" type="text" inputmode="numeric" required placeholder="أدخل رقم العضوية الخاص بك" class="glass-input w-full px-4 py-3.5 rounded-2xl text-base font-semibold" />
+            <label class="block text-sm font-bold text-slate-200 mb-1.5">اسم العضو (كما هو مسجل بالاتحاد)</label>
+            <input id="login-member-name" type="text" required placeholder="اكتب اسمك الثلاثي..." class="glass-input w-full px-4 py-3.5 rounded-2xl text-base font-semibold" />
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-slate-200 mb-1.5">كود التحقق السري (PIN)</label>
-            <input id="login-member-pin" type="password" required placeholder="أدخل كود الدخول (أو رقم العضوية)" class="glass-input w-full px-4 py-3.5 rounded-2xl text-base" />
-            <p class="text-[11px] text-slate-400 mt-1.5">في حال عدم استلام كود منفصل، أدخل رقم عضويتك في الخانتين.</p>
+            <label class="block text-sm font-bold text-slate-200 mb-1.5">رقم العضوية (Member ID)</label>
+            <input id="login-member-id" type="text" inputmode="numeric" required placeholder="أدخل رقم العضوية الخاص بك" class="glass-input w-full px-4 py-3.5 rounded-2xl text-base font-mono font-bold" />
+            <p class="text-[11px] text-slate-400 mt-1.5">يتعرف النظام تلقائياً على الهمزات والمسافات لتسهيل دخولك.</p>
           </div>
 
           <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-l from-red-600 via-rose-600 to-amber-600 hover:opacity-95 text-white font-extrabold text-base shadow-xl shadow-red-900/30 transition active:scale-[0.99]">
@@ -204,7 +210,7 @@
         </form>
       </div>
 
-      <!-- HR Login Card -->
+      <!-- HR Login Card (Scoped by Governorate + Committee + Dedicated Access Code) -->
       <div id="hr-login-card" class="hidden glass-panel rounded-3xl p-6 sm:p-8">
         <form onsubmit="handleHrLogin(event)" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -215,7 +221,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-bold text-slate-200 mb-1.5">الصلاحية الإدارية</label>
+              <label class="block text-sm font-bold text-slate-200 mb-1.5">الصلاحية / اللجنة</label>
               <select id="login-hr-role" class="glass-input w-full px-3.5 py-3 rounded-2xl text-sm text-white">
                 <option value="Central HR / High Board">Central HR / High Board</option>
               </select>
@@ -223,13 +229,9 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-slate-200 mb-1.5">اسم مسؤول التقييم</label>
-            <input id="login-hr-name" type="text" required placeholder="اكتب اسم مسؤول التقييم الحقيقي..." class="glass-input w-full px-4 py-3 rounded-2xl" />
-          </div>
-
-          <div>
-            <label class="block text-sm font-bold text-slate-200 mb-1.5">كود الإدارة (HR Access Code)</label>
-            <input id="login-hr-pass" type="password" required placeholder="أدخل كود الموارد البشرية" class="glass-input w-full px-4 py-3 rounded-2xl" />
+            <label class="block text-sm font-bold text-slate-200 mb-1.5">كود الدخول الخاص بالمسؤول (Access Code)</label>
+            <input id="login-hr-pass" type="password" required placeholder="أدخل كود الدخول المعتمد لصلاحيتك..." class="glass-input w-full px-4 py-3.5 rounded-2xl text-base" />
+            <p class="text-[11px] text-slate-400 mt-1.5">يظهر اسمك الرسمي المعتمد تلقائياً بمجرد إدخال كودك الصحيح.</p>
           </div>
 
           <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-l from-amber-500 via-orange-600 to-rose-600 hover:opacity-95 text-white font-extrabold text-base shadow-xl shadow-orange-900/30 transition active:scale-[0.99]">
@@ -244,39 +246,53 @@
     <!-- ===================================================================== -->
     <section id="member-dashboard" class="hidden space-y-6 animate-in">
 
-      <!-- Member Profile & Month Selector Header -->
+      <!-- Member Profile, Avatar Upload & Month Selector Header -->
       <div class="glass-panel rounded-3xl p-5 sm:p-7 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-40 h-40 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div class="space-y-2">
-            <div class="flex flex-wrap items-center gap-2">
-              <span id="m-badge-id" class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold font-mono">
-                ID: ---
-              </span>
-              <span id="m-badge-gov" class="px-3 py-1 rounded-full bg-white/10 text-slate-200 text-xs font-bold">
-                ---
-              </span>
-              <span id="m-badge-committee" class="px-3 py-1 rounded-full bg-rose-600/20 border border-rose-500/30 text-rose-200 text-xs font-bold">
-                ---
-              </span>
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+            <!-- Member Avatar + Quick Upload Trigger -->
+            <div class="relative group shrink-0">
+              <div id="m-avatar-container" class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl overflow-hidden border-2 border-amber-500/50 bg-slate-900 shadow-xl flex items-center justify-center"></div>
+              <label for="member-avatar-input" title="تغيير الصورة الشخصية" class="absolute -bottom-2 -left-2 w-8 h-8 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg cursor-pointer transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </label>
+              <input id="member-avatar-input" type="file" accept="image/*" onchange="handleMemberAvatarUpload(event)" class="hidden" />
             </div>
 
-            <h2 id="m-profile-name" class="text-2xl sm:text-3xl font-black text-white">---</h2>
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="m-badge-id" class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold font-mono">
+                  ID: ---
+                </span>
+                <span id="m-badge-gov" class="px-3 py-1 rounded-full bg-white/10 text-slate-200 text-xs font-bold">
+                  ---
+                </span>
+                <span id="m-badge-committee" class="px-3 py-1 rounded-full bg-rose-600/20 border border-rose-500/30 text-rose-200 text-xs font-bold">
+                  ---
+                </span>
+              </div>
 
-            <!-- Leadership Hierarchy Info -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 text-xs text-slate-300">
-              <div class="bg-white/5 px-3 py-2 rounded-xl border border-white/5">
-                <span class="text-slate-400 block">مسؤول التقييم للعضو:</span>
-                <strong id="m-evaluator-name" class="text-white">-</strong>
-              </div>
-              <div class="bg-white/5 px-3 py-2 rounded-xl border border-white/5">
-                <span class="text-slate-400 block">رئيس اللجنة بالمحافظة:</span>
-                <strong id="m-gov-head-name" class="text-white">-</strong>
-              </div>
-              <div class="bg-white/5 px-3 py-2 rounded-xl border border-white/5">
-                <span class="text-slate-400 block">رئيس اللجنة المركزية:</span>
-                <strong id="m-central-head-name" class="text-white">-</strong>
+              <h2 id="m-profile-name" class="text-2xl sm:text-3xl font-black text-white">---</h2>
+
+              <!-- Leadership Hierarchy Info -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs text-slate-300">
+                <div class="bg-white/5 px-3 py-2 rounded-xl border border-white/5">
+                  <span class="text-slate-400 block">مسؤول التقييم للعضو:</span>
+                  <strong id="m-evaluator-name" class="text-white">-</strong>
+                </div>
+                <div class="bg-white/5 px-3 py-2 rounded-xl border border-white/5">
+                  <span class="text-slate-400 block">رئيس اللجنة بالمحافظة:</span>
+                  <strong id="m-gov-head-name" class="text-white">-</strong>
+                </div>
+                <div class="bg-white/5 px-3 py-2 rounded-xl border border-white/5">
+                  <span class="text-slate-400 block">رئيس اللجنة المركزية:</span>
+                  <strong id="m-central-head-name" class="text-white">-</strong>
+                </div>
               </div>
             </div>
           </div>
@@ -332,7 +348,7 @@
         </div>
       </div>
 
-      <!-- BEST MEMBERS HONOR BOARD (LEADERBOARD) -->
+      <!-- BEST MEMBERS HONOR BOARD (LEADERBOARD WITH AVATARS) -->
       <div class="glass-panel rounded-3xl p-6 border border-amber-500/25 relative overflow-hidden">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div class="flex items-center gap-3">
@@ -473,7 +489,7 @@
             <span class="px-2.5 py-0.5 rounded-lg bg-rose-500/20 text-rose-300 text-xs font-extrabold border border-rose-500/30" id="hr-badge-gov">
               جميع المحافظات
             </span>
-            <span class="text-xs text-slate-400">مرحباً، <strong id="hr-badge-name" class="text-white">-</strong></span>
+            <span class="text-xs text-slate-400">مسؤول التقييم المعتمد: <strong id="hr-badge-name" class="text-white">-</strong></span>
           </div>
           <h2 class="text-xl sm:text-2xl font-black text-white">لوحة إدارة التقييمات والموارد البشرية</h2>
         </div>
@@ -486,9 +502,6 @@
           <button onclick="switchHrTab('manual')" id="hr-tab-btn-manual" class="hr-tab-btn px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
             إضافة / تعديل فردي
           </button>
-          <button onclick="switchHrTab('committees')" id="hr-tab-btn-committees" class="hr-tab-btn px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
-            المحافظات واللجان
-          </button>
           <button onclick="switchHrTab('analytics')" id="hr-tab-btn-analytics" class="hr-tab-btn px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
             الأعضاء والـ Best
           </button>
@@ -496,13 +509,17 @@
             <span>الالتماسات والسجل</span>
             <span id="pending-appeals-count" class="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[11px] font-black">0</span>
           </button>
+          <!-- Central HR Only Tab -->
+          <button onclick="switchHrTab('committees')" id="hr-tab-btn-committees" class="hr-tab-btn hidden px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
+            الهيكل ومسؤولي الـ HR
+          </button>
         </div>
       </div>
 
-      <!-- HR TAB 1: EXCEL BULK UPLOAD & TEMPLATE -->
+      <!-- HR TAB 1: EXCEL BULK UPLOAD & SMART PRE-FILLED TEMPLATE -->
       <div id="hr-tab-upload" class="hr-tab-content space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <!-- Step 1: Download Ready Template -->
+          <!-- Step 1: Download Smart Pre-filled Template -->
           <div class="lg:col-span-5 glass-panel rounded-3xl p-6 flex flex-col justify-between space-y-4">
             <div class="space-y-3">
               <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -510,9 +527,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-extrabold text-white">1. تحميل قالب الإكسيل المعتمد</h3>
+              <h3 class="text-lg font-extrabold text-white">1. تحميل قالب الإكسيل الذكي</h3>
               <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                حمّل ملف الإكسيل الجاهز بالأعمدة المطابقة تماماً لنظام الاتحاد، واملأ بيانات الأعضاء ودرجات الأسابيع الأربعة ثم ارفعه هنا بضغطة واحدة.
+                ينزل الملف <strong>مملوءاً تلقائياً بأسماء وأرقام عضوية أعضاء نطاقك المسجلين مسبقاً</strong>؛ كل ما عليك هو كتابة الشهر ورصد درجات الأسابيع الأربعة فقط.
               </p>
             </div>
 
@@ -535,17 +552,17 @@
                 </svg>
               </div>
               <p class="text-sm sm:text-base font-extrabold text-white">اضغط لاختيار ملف Excel أو اسحبه هنا</p>
-              <p class="text-xs text-slate-400 mt-1">يدعم صيغ .xlsx و .xls و .csv</p>
+              <p class="text-xs text-slate-400 mt-1">يدعم صيغ .xlsx و .xls و .csv (ويستكمل البيانات المسجلة تلقائياً)</p>
               <input id="excel-file-input" type="file" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(event)" class="hidden" />
             </label>
           </div>
         </div>
 
-        <!-- Live Excel Preview & Validation Box -->
+        <!-- Live Excel Preview & Scope Validation Box -->
         <div id="excel-preview-panel" class="hidden glass-panel rounded-3xl p-6 space-y-4 border border-amber-500/30">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h4 class="text-base sm:text-lg font-extrabold text-amber-300">معاينة البيانات قبل الاعتماد والنشر</h4>
+              <h4 class="text-base sm:text-lg font-extrabold text-amber-300">معاينة البيانات وفحص الصلاحيات قبل النشر</h4>
               <p id="excel-preview-summary" class="text-xs text-slate-300 mt-0.5"></p>
             </div>
             <div class="flex items-center gap-2">
@@ -553,7 +570,7 @@
                 إلغاء
               </button>
               <button onclick="commitExcelData()" class="px-5 py-2.5 rounded-xl bg-gradient-to-l from-emerald-600 to-teal-600 hover:opacity-95 text-xs sm:text-sm font-extrabold text-white shadow-lg transition">
-                اعتماد ونشر التقييمات للأعضاء
+                اعتماد ونشر السجلات السليمة
               </button>
             </div>
           </div>
@@ -562,7 +579,7 @@
             <table class="w-full text-right text-xs min-w-[680px]">
               <thead class="bg-slate-900 text-slate-300 sticky top-0">
                 <tr>
-                  <th class="py-2.5 px-3">الحالة</th>
+                  <th class="py-2.5 px-3">حالة الفحص</th>
                   <th class="py-2.5 px-3">رقم العضوية</th>
                   <th class="py-2.5 px-3">اسم العضو</th>
                   <th class="py-2.5 px-3">اللجنة</th>
@@ -577,13 +594,13 @@
         </div>
       </div>
 
-      <!-- HR TAB 2: MANUAL SINGLE ENTRY / EDIT -->
+      <!-- HR TAB 2: MANUAL SINGLE ENTRY / EDIT (WITH SMART AUTO-COMPLETE) -->
       <div id="hr-tab-manual" class="hidden hr-tab-content">
         <form id="manual-eval-form" onsubmit="handleManualSave(event)" class="glass-panel rounded-3xl p-6 space-y-6">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-4">
             <div>
               <h3 class="text-lg font-extrabold text-white">إضافة أو تعديل تقييم عضو يدوياً</h3>
-              <p class="text-xs text-slate-400">يتم حساب المجموع الأسبوعي والإجمالي الشهري تلقائياً أثناء الإدخال</p>
+              <p class="text-xs text-slate-400">اكتب رقم العضوية وسيتم استكمال بيانات العضو المسجل مسبقاً تلقائياً</p>
             </div>
             <div class="flex items-center gap-2">
               <button type="button" onclick="resetManualForm()" class="px-3.5 py-2 rounded-2xl bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-bold transition">
@@ -599,11 +616,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm">
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1.5">رقم العضوية *</label>
-              <input id="m-id" type="text" required placeholder="مثال: 1001" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1.5">كود دخول العضو (PIN)</label>
-              <input id="m-pin" type="text" placeholder="يُترك فارغاً ليكون نفس رقم العضوية" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
+              <input id="m-id" type="text" required oninput="handleManualIdAutoFill(this.value)" placeholder="مثال: 1001" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-mono" />
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1.5">اسم العضو *</label>
@@ -638,7 +651,7 @@
               <label class="block text-xs font-bold text-slate-300 mb-1.5">رئيس اللجنة بالمحافظة</label>
               <input id="m-gov-head" type="text" placeholder="اسم رئيس اللجنة بالمحافظة" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
             </div>
-            <div>
+            <div class="sm:col-span-2">
               <label class="block text-xs font-bold text-slate-300 mb-1.5">رئيس اللجنة المركزية</label>
               <input id="m-central-head" type="text" placeholder="اسم رئيس اللجنة المركزية" class="glass-input w-full px-3.5 py-2.5 rounded-xl" />
             </div>
@@ -671,18 +684,177 @@
         </form>
       </div>
 
-      <!-- HR TAB: GOVERNORATES, COMMITTEES & DATA MANAGEMENT -->
+      <!-- HR TAB 3: ANALYTICS, CENTRAL BEST BOARD & SCOPED DIRECTORY -->
+      <div id="hr-tab-analytics" class="hidden hr-tab-content space-y-6">
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass-panel rounded-2xl p-4">
+            <span class="text-xs text-slate-400">إجمالي التقييمات في نطاقك</span>
+            <p id="stat-total-records" class="text-2xl sm:text-3xl font-black text-white mt-1">0</p>
+          </div>
+          <div class="glass-panel rounded-2xl p-4">
+            <span class="text-xs text-slate-400">متوسط الأداء العام</span>
+            <p id="stat-avg-score" class="text-2xl sm:text-3xl font-black text-amber-400 mt-1">0%</p>
+          </div>
+          <div class="glass-panel rounded-2xl p-4">
+            <span class="text-xs text-slate-400">أعلى لجنة تقييماً</span>
+            <p id="stat-top-committee" class="text-base sm:text-lg font-black text-emerald-400 mt-2 truncate">-</p>
+          </div>
+          <div class="glass-panel rounded-2xl p-4">
+            <span class="text-xs text-slate-400">أعضاء يحتاجون متابعة (&lt;65)</span>
+            <p id="stat-low-count" class="text-2xl sm:text-3xl font-black text-rose-400 mt-1">0</p>
+          </div>
+        </div>
+
+        <!-- CENTRAL HR ONLY: TOP PERFORMERS ACROSS ALL COMMITTEES & GOVERNORATES -->
+        <div id="central-best-board-section" class="hidden glass-panel rounded-3xl p-6 border border-amber-500/30 space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-black">رؤية Central HR & High Board</span>
+              <h3 class="text-lg font-black text-white mt-1">أوائل كل اللجان وكل المحافظات (Best Performers)</h3>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="central-best-month-filter" onchange="renderCentralBestBoard()" class="glass-input px-3 py-2 rounded-xl text-xs font-bold">
+                <option value="ALL">أعلى تقييم إجمالاً (كل الشهور)</option>
+              </select>
+              <button onclick="exportCentralBestReport()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition">
+                تصدير كشف الأوائل Excel
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-extrabold text-amber-300 mb-3">أوائل اللجان على مستوى الجمهورية:</h4>
+            <div id="central-best-committees-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+          </div>
+
+          <div class="pt-4 border-t border-white/10">
+            <h4 class="text-xs font-extrabold text-rose-300 mb-3">أوائل المحافظات:</h4>
+            <div id="central-best-govs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+          </div>
+        </div>
+
+        <!-- Committee Comparison Chart -->
+        <div class="glass-panel rounded-3xl p-6">
+          <h3 class="text-base sm:text-lg font-extrabold text-white mb-1">متوسط أداء اللجان</h3>
+          <p class="text-xs text-slate-400 mb-4">مقارنة متوسط الدرجات في نطاق صلاحياتك</p>
+          <div class="relative w-full h-64">
+            <canvas id="hr-committees-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Filter & Search Directory -->
+        <div class="glass-panel rounded-3xl p-6 space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <h3 class="text-base sm:text-lg font-extrabold text-white">سجل تقييمات الأعضاء</h3>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <input id="hr-search-input" type="text" oninput="renderHrDirectory()" placeholder="بحث بالاسم أو ID..." class="glass-input px-3.5 py-2 rounded-xl text-xs sm:text-sm w-40 sm:w-48" />
+              <select id="hr-filter-gov" onchange="renderHrDirectory()" class="glass-input px-3 py-2 rounded-xl text-xs sm:text-sm">
+                <option value="ALL">كل المحافظات</option>
+              </select>
+              <select id="hr-filter-committee" onchange="renderHrDirectory()" class="glass-input px-3 py-2 rounded-xl text-xs sm:text-sm">
+                <option value="ALL">كل اللجان</option>
+              </select>
+              <select id="hr-filter-month" onchange="renderHrDirectory()" class="glass-input px-3 py-2 rounded-xl text-xs sm:text-sm">
+                <option value="ALL">كل الشهور</option>
+              </select>
+              <button onclick="exportFilteredReport()" class="px-3.5 py-2 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition">
+                تصدير Excel
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto custom-scroll">
+            <table class="w-full text-right text-xs sm:text-sm min-w-[680px]">
+              <thead>
+                <tr class="bg-white/5 text-slate-300 border-b border-white/10">
+                  <th class="py-3 px-3">ID</th>
+                  <th class="py-3 px-3">العضو</th>
+                  <th class="py-3 px-3">اللجنة</th>
+                  <th class="py-3 px-3">المحافظة</th>
+                  <th class="py-3 px-3">الشهر</th>
+                  <th class="py-3 px-3 text-center">الدرجة</th>
+                  <th class="py-3 px-3 text-center">إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="hr-directory-tbody" class="divide-y divide-white/10"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- HR TAB 4: APPEALS & AUDIT LOG -->
+      <div id="hr-tab-appeals" class="hidden hr-tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Appeals Management -->
+        <div class="lg:col-span-7 glass-panel rounded-3xl p-6 space-y-4">
+          <div>
+            <h3 class="text-lg font-extrabold text-white">طلبات مراجعة الدرجات والالتماسات</h3>
+            <p class="text-xs text-slate-400">يمكنك الرد على استفسارات أعضاء نطاقك أو حذف الالتماس عند الانتهاء منه</p>
+          </div>
+          <div id="hr-appeals-list" class="space-y-3"></div>
+        </div>
+
+        <!-- Audit Log -->
+        <div class="lg:col-span-5 glass-panel rounded-3xl p-6 space-y-4">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <h3 class="text-lg font-extrabold text-white">سجل التعديلات والرقابة (Audit Log)</h3>
+              <p class="text-xs text-slate-400">توثيق تلقائي لكل عملية رفع أو تعديل أو حذف</p>
+            </div>
+            <button id="clear-logs-btn" type="button" onclick="clearAllAuditLogs()" class="hidden px-3 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/35 text-rose-300 border border-rose-500/30 text-xs font-bold transition shrink-0">
+              مسح السجل
+            </button>
+          </div>
+          <div id="hr-audit-log-list" class="space-y-2.5 max-h-[460px] overflow-y-auto custom-scroll"></div>
+        </div>
+      </div>
+
+      <!-- HR TAB 5 (CENTRAL HR ONLY): STRUCTURE, HR STAFF ACCOUNTS & DATA RESET -->
       <div id="hr-tab-committees" class="hidden hr-tab-content space-y-6">
+        <!-- HR Accounts & Access Codes Manager -->
+        <div class="glass-panel rounded-3xl p-6 space-y-5 border border-amber-500/25">
+          <div>
+            <h3 class="text-lg font-extrabold text-white">إدارة مسؤولي الـ HR وأكواد الدخول</h3>
+            <p class="text-xs text-slate-400 mt-1">حدد لكل مسؤول HR اسمه الرسمي المعتمد، محافظته، لجنته، وكود الدخول الخاص به لمنع التداخل</p>
+          </div>
+
+          <form onsubmit="handleAddHrAccount(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <input id="new-hr-name" type="text" required placeholder="الاسم الرسمي للمسؤول..." class="glass-input px-3.5 py-2.5 rounded-xl text-xs sm:text-sm" />
+            <select id="new-hr-gov" class="glass-input px-3.5 py-2.5 rounded-xl text-xs sm:text-sm"></select>
+            <select id="new-hr-role" class="glass-input px-3.5 py-2.5 rounded-xl text-xs sm:text-sm"></select>
+            <input id="new-hr-code" type="text" required placeholder="كود الدخول (مثال: MEDIA-26)" class="glass-input px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-mono" />
+            <button type="submit" class="px-4 py-2.5 rounded-xl bg-gradient-to-l from-amber-500 to-orange-600 hover:opacity-95 text-slate-950 font-black text-xs sm:text-sm transition">
+              + إضافة / تحديث مسؤول
+            </button>
+          </form>
+
+          <div class="overflow-x-auto custom-scroll">
+            <table class="w-full text-right text-xs min-w-[600px]">
+              <thead>
+                <tr class="bg-white/5 text-slate-300 border-b border-white/10">
+                  <th class="py-2.5 px-3">اسم المسؤول المعتمد</th>
+                  <th class="py-2.5 px-3">نطاق المحافظة</th>
+                  <th class="py-2.5 px-3">اللجنة / الصلاحية</th>
+                  <th class="py-2.5 px-3">كود الدخول</th>
+                  <th class="py-2.5 px-3 text-center">إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="hr-accounts-tbody" class="divide-y divide-white/10"></tbody>
+            </table>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <!-- Governorates Manager -->
           <div class="lg:col-span-6 glass-panel rounded-3xl p-6 space-y-4">
             <div>
-              <h3 class="text-lg font-extrabold text-white">إدارة المحافظات (نطاقات العمل المستقلة)</h3>
+              <h3 class="text-lg font-extrabold text-white">إدارة المحافظات</h3>
               <p class="text-xs text-slate-400 mt-1">كل محافظة تعمل ببياناتها المستقلة، وتظهر جميعها للـ Central HR</p>
             </div>
 
             <form onsubmit="handleAddGovernorate(event)" class="flex flex-col sm:flex-row gap-2">
-              <input id="new-gov-name" type="text" required placeholder="أضف محافظة جديدة (مثال: المنصورة، أسيوط)..." class="glass-input flex-1 px-4 py-2.5 rounded-2xl text-sm" />
+              <input id="new-gov-name" type="text" required placeholder="أضف محافظة جديدة..." class="glass-input flex-1 px-4 py-2.5 rounded-2xl text-sm" />
               <button type="submit" class="px-4 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs sm:text-sm transition shrink-0">
                 + إضافة محافظة
               </button>
@@ -709,12 +881,12 @@
           </div>
         </div>
 
-        <!-- Data Reset -->
+        <!-- Data Reset (Central HR Only) -->
         <div class="glass-panel rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-rose-500/20">
           <div class="space-y-1">
-            <h3 class="text-lg font-extrabold text-white">تصفير قاعدة البيانات</h3>
+            <h3 class="text-lg font-extrabold text-white">تصفير قاعدة البيانات بالكامل</h3>
             <p class="text-xs sm:text-sm text-slate-300">
-              مسح كافة التقييمات والالتماسات المسجلة حالياً لبدء موسم جديد بقاعدة بيانات فارغة تماماً.
+              مسح كافة التقييمات والالتماسات المسجلة لبدء موسم جديد بقاعدة بيانات فارغة تماماً.
             </p>
           </div>
 
@@ -723,104 +895,6 @@
               مسح كافة السجلات والبدء من الصفر
             </button>
           </div>
-        </div>
-      </div>
-
-      <!-- HR TAB 3: ANALYTICS, HIGH BOARD STATS & DIRECTORY -->
-      <div id="hr-tab-analytics" class="hidden hr-tab-content space-y-6">
-        <!-- KPI Summary Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="glass-panel rounded-2xl p-4">
-            <span class="text-xs text-slate-400">إجمالي التقييمات المسجلة</span>
-            <p id="stat-total-records" class="text-2xl sm:text-3xl font-black text-white mt-1">0</p>
-          </div>
-          <div class="glass-panel rounded-2xl p-4">
-            <span class="text-xs text-slate-400">متوسط الأداء العام</span>
-            <p id="stat-avg-score" class="text-2xl sm:text-3xl font-black text-amber-400 mt-1">0%</p>
-          </div>
-          <div class="glass-panel rounded-2xl p-4">
-            <span class="text-xs text-slate-400">أعلى لجنة تقييماً</span>
-            <p id="stat-top-committee" class="text-base sm:text-lg font-black text-emerald-400 mt-2 truncate">-</p>
-          </div>
-          <div class="glass-panel rounded-2xl p-4">
-            <span class="text-xs text-slate-400">أعضاء يحتاجون متابعة (&lt;65)</span>
-            <p id="stat-low-count" class="text-2xl sm:text-3xl font-black text-rose-400 mt-1">0</p>
-          </div>
-        </div>
-
-        <!-- Committee Comparison Chart -->
-        <div class="glass-panel rounded-3xl p-6">
-          <h3 class="text-base sm:text-lg font-extrabold text-white mb-1">متوسط أداء اللجان (رؤية الـ High Board)</h3>
-          <p class="text-xs text-slate-400 mb-4">مقارنة متوسط الدرجات بين اللجان المختلفة لاتخاذ القرارات الإدارية</p>
-          <div class="relative w-full h-64">
-            <canvas id="hr-committees-chart"></canvas>
-          </div>
-        </div>
-
-        <!-- Filter & Search Directory -->
-        <div class="glass-panel rounded-3xl p-6 space-y-4">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <h3 class="text-base sm:text-lg font-extrabold text-white">سجل تقييمات الأعضاء وأوائل اللجان</h3>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <input id="hr-search-input" type="text" oninput="renderHrDirectory()" placeholder="بحث بالاسم أو ID..." class="glass-input px-3.5 py-2 rounded-xl text-xs sm:text-sm w-40 sm:w-48" />
-              <select id="hr-filter-gov" onchange="renderHrDirectory()" class="glass-input px-3 py-2 rounded-xl text-xs sm:text-sm">
-                <option value="ALL">كل المحافظات</option>
-              </select>
-              <select id="hr-filter-committee" onchange="renderHrDirectory()" class="glass-input px-3 py-2 rounded-xl text-xs sm:text-sm">
-                <option value="ALL">كل اللجان</option>
-              </select>
-              <select id="hr-filter-month" onchange="renderHrDirectory()" class="glass-input px-3 py-2 rounded-xl text-xs sm:text-sm">
-                <option value="ALL">كل الشهور</option>
-              </select>
-              <button onclick="exportFilteredReport()" class="px-3.5 py-2 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition">
-                تصدير Excel
-              </button>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto custom-scroll">
-            <table class="w-full text-right text-xs sm:text-sm min-w-[680px]">
-              <thead>
-                <tr class="bg-white/5 text-slate-300 border-b border-white/10">
-                  <th class="py-3 px-3">ID</th>
-                  <th class="py-3 px-3">الاسم</th>
-                  <th class="py-3 px-3">اللجنة</th>
-                  <th class="py-3 px-3">المحافظة</th>
-                  <th class="py-3 px-3">الشهر</th>
-                  <th class="py-3 px-3 text-center">الدرجة</th>
-                  <th class="py-3 px-3 text-center">إجراء</th>
-                </tr>
-              </thead>
-              <tbody id="hr-directory-tbody" class="divide-y divide-white/10"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- HR TAB 4: APPEALS & AUDIT LOG -->
-      <div id="hr-tab-appeals" class="hidden hr-tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Appeals Management -->
-        <div class="lg:col-span-7 glass-panel rounded-3xl p-6 space-y-4">
-          <div>
-            <h3 class="text-lg font-extrabold text-white">طلبات مراجعة الدرجات والالتماسات</h3>
-            <p class="text-xs text-slate-400">يمكنك الرد على استفسارات الأعضاء أو حذف الالتماس نهائياً عند الانتهاء منه</p>
-          </div>
-          <div id="hr-appeals-list" class="space-y-3"></div>
-        </div>
-
-        <!-- Audit Log -->
-        <div class="lg:col-span-5 glass-panel rounded-3xl p-6 space-y-4">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <h3 class="text-lg font-extrabold text-white">سجل التعديلات والرقابة (Audit Log)</h3>
-              <p class="text-xs text-slate-400">توثيق تلقائي لكل عملية رفع أو تعديل أو حذف</p>
-            </div>
-            <button type="button" onclick="clearAllAuditLogs()" class="px-3 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/35 text-rose-300 border border-rose-500/30 text-xs font-bold transition shrink-0">
-              مسح السجل
-            </button>
-          </div>
-          <div id="hr-audit-log-list" class="space-y-2.5 max-h-[460px] overflow-y-auto custom-scroll"></div>
         </div>
       </div>
 
@@ -857,7 +931,6 @@
       appId: "1:25237786956:web:ff3868b2b23361470bbfe9"
     };
 
-    // المحافظات واللجان الأساسية المعتمدة
     const DEFAULT_GOVERNORATES = [
       'القاهرة',
       'الجيزة',
@@ -876,6 +949,16 @@
       'Logistics'
     ];
 
+    const DEFAULT_HR_ACCOUNTS = [
+      {
+        id: 'HR-CENTRAL-01',
+        name: 'المركزية - Central HR',
+        govScope: 'ALL',
+        role: 'Central HR / High Board',
+        code: 'HR2025'
+      }
+    ];
+
     const CRITERIA_ROWS = [
       { key: 'attMeetings', category: 'الحضور', label: 'اجتماعات', maxPerWeek: 5 },
       { key: 'attGroup', category: 'الحضور', label: 'حضوره بالجروب', maxPerWeek: 3 },
@@ -888,11 +971,13 @@
     ];
 
     const STORAGE_KEYS = {
-      EVALS: 'tmsu_hr_evaluations_prod_v1',
-      APPEALS: 'tmsu_hr_appeals_prod_v1',
-      LOGS: 'tmsu_hr_logs_prod_v1',
-      COMMITTEES: 'tmsu_hr_committees_prod_v1',
-      GOVS: 'tmsu_hr_govs_prod_v1'
+      EVALS: 'tmsu_hr_evaluations_prod_v2',
+      APPEALS: 'tmsu_hr_appeals_prod_v2',
+      LOGS: 'tmsu_hr_logs_prod_v2',
+      COMMITTEES: 'tmsu_hr_committees_prod_v2',
+      GOVS: 'tmsu_hr_govs_prod_v2',
+      HR_ACCOUNTS: 'tmsu_hr_accounts_prod_v2',
+      AVATARS: 'tmsu_hr_avatars_prod_v2'
     };
 
     let state = {
@@ -901,6 +986,8 @@
       logs: [],
       committees: [...DEFAULT_COMMITTEES],
       governorates: [...DEFAULT_GOVERNORATES],
+      hrAccounts: [...DEFAULT_HR_ACCOUNTS],
+      avatars: {}, // { memberId: base64DataUrl }
       currentUser: null,
       pendingExcelRows: [],
       bestMemberScope: 'gov'
@@ -911,6 +998,43 @@
     let hrChartInstance = null;
     let firestoreDb = null;
 
+    // توحيد النص العربي لمقارنة الأسماء بدقة وتجاوز أخطاء الهمزات والمسافات
+    function normalizeArabicName(str) {
+      return String(str || '')
+        .trim()
+        .replace(/[أإآٱ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .replace(/[\u064B-\u065F]/g, '')
+        .replace(/\s+/g, ' ')
+        .toLowerCase();
+    }
+
+    // توليد عنصر الصورة الشخصية (الصورة الحقيقية أو الحرف الأول من الاسم)
+    function getAvatarHtml(memberId, name, sizeClass = 'w-10 h-10 text-sm') {
+      const imgData = state.avatars && state.avatars[String(memberId)];
+      if (imgData) {
+        return `<img src="${imgData}" alt="${name}" class="${sizeClass} rounded-2xl object-cover border border-amber-500/40 shrink-0" />`;
+      }
+      const initial = (String(name || 'ع').trim()[0] || 'ع');
+      return `<div class="${sizeClass} rounded-2xl bg-gradient-to-br from-red-600/40 to-amber-500/30 border border-amber-500/30 text-amber-200 font-black flex items-center justify-center shrink-0">${initial}</div>`;
+    }
+
+    function isCentralHr() {
+      return state.currentUser &&
+        state.currentUser.type === 'hr' &&
+        state.currentUser.govScope === 'ALL' &&
+        state.currentUser.role === 'Central HR / High Board';
+    }
+
+    function getHrCommitteeScope() {
+      if (!state.currentUser || state.currentUser.type !== 'hr') return null;
+      if (state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
+        return state.currentUser.role.replace('HR لجنة ', '').trim();
+      }
+      return null;
+    }
+
     function loadState() {
       try {
         const savedEvals = localStorage.getItem(STORAGE_KEYS.EVALS);
@@ -918,18 +1042,24 @@
         const savedLogs = localStorage.getItem(STORAGE_KEYS.LOGS);
         const savedComms = localStorage.getItem(STORAGE_KEYS.COMMITTEES);
         const savedGovs = localStorage.getItem(STORAGE_KEYS.GOVS);
+        const savedHrAccs = localStorage.getItem(STORAGE_KEYS.HR_ACCOUNTS);
+        const savedAvatars = localStorage.getItem(STORAGE_KEYS.AVATARS);
 
         state.evaluations = savedEvals ? JSON.parse(savedEvals) : [];
         state.appeals = savedAppeals ? JSON.parse(savedAppeals) : [];
         state.logs = savedLogs ? JSON.parse(savedLogs) : [];
         state.committees = savedComms ? JSON.parse(savedComms) : [...DEFAULT_COMMITTEES];
         state.governorates = savedGovs ? JSON.parse(savedGovs) : [...DEFAULT_GOVERNORATES];
+        state.hrAccounts = savedHrAccs ? JSON.parse(savedHrAccs) : [...DEFAULT_HR_ACCOUNTS];
+        state.avatars = savedAvatars ? JSON.parse(savedAvatars) : {};
       } catch (e) {
         state.evaluations = [];
         state.appeals = [];
         state.logs = [];
         state.committees = [...DEFAULT_COMMITTEES];
         state.governorates = [...DEFAULT_GOVERNORATES];
+        state.hrAccounts = [...DEFAULT_HR_ACCOUNTS];
+        state.avatars = {};
       }
       syncCommitteeDropdowns();
       initBuiltInFirebase();
@@ -942,6 +1072,8 @@
         localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(state.logs));
         localStorage.setItem(STORAGE_KEYS.COMMITTEES, JSON.stringify(state.committees));
         localStorage.setItem(STORAGE_KEYS.GOVS, JSON.stringify(state.governorates));
+        localStorage.setItem(STORAGE_KEYS.HR_ACCOUNTS, JSON.stringify(state.hrAccounts));
+        localStorage.setItem(STORAGE_KEYS.AVATARS, JSON.stringify(state.avatars));
         if (!skipCloud && firestoreDb) {
           pushLocalToCloud(true);
         }
@@ -975,6 +1107,8 @@
             if (Array.isArray(cloudData.appeals)) state.appeals = cloudData.appeals;
             if (Array.isArray(cloudData.committees)) state.committees = cloudData.committees;
             if (Array.isArray(cloudData.governorates)) state.governorates = cloudData.governorates;
+            if (Array.isArray(cloudData.hrAccounts) && cloudData.hrAccounts.length > 0) state.hrAccounts = cloudData.hrAccounts;
+            if (cloudData.avatars && typeof cloudData.avatars === 'object') state.avatars = cloudData.avatars;
             if (Array.isArray(cloudData.logs)) state.logs = cloudData.logs;
 
             saveState(true);
@@ -984,6 +1118,7 @@
               renderMemberSelectedMonth();
             } else if (state.currentUser && state.currentUser.type === 'hr') {
               updatePendingAppealsBadge();
+              renderHrAccountsManager();
               renderGovernoratesManager();
               renderCommitteesManager();
               renderHrAnalytics();
@@ -1010,23 +1145,31 @@
         appeals: state.appeals,
         committees: state.committees,
         governorates: state.governorates,
+        hrAccounts: state.hrAccounts,
+        avatars: state.avatars,
         logs: state.logs,
         updatedAt: new Date().toISOString()
       }).catch(err => console.warn('Cloud sync error:', err));
     }
 
     function syncCommitteeDropdowns() {
+      const govOptionsAll = `<option value="ALL">المركزية (جميع المحافظات)</option>` +
+        state.governorates.map(g => `<option value="${g}">محافظة ${g}</option>`).join('');
+
+      const roleOptionsAll = `<option value="Central HR / High Board">Central HR / High Board (صلاحية شاملة)</option>` +
+        state.committees.map(c => `<option value="HR لجنة ${c}">HR لجنة ${c}</option>`).join('');
+
       const hrGovSelect = document.getElementById('login-hr-gov');
-      if (hrGovSelect) {
-        hrGovSelect.innerHTML = `<option value="ALL">المركزية (جميع المحافظات)</option>` +
-          state.governorates.map(g => `<option value="${g}">محافظة ${g}</option>`).join('');
-      }
+      if (hrGovSelect) hrGovSelect.innerHTML = govOptionsAll;
 
       const hrRoleSelect = document.getElementById('login-hr-role');
-      if (hrRoleSelect) {
-        hrRoleSelect.innerHTML = `<option value="Central HR / High Board">Central HR / High Board (صلاحية شاملة)</option>` +
-          state.committees.map(c => `<option value="HR لجنة ${c}">HR لجنة ${c}</option>`).join('');
-      }
+      if (hrRoleSelect) hrRoleSelect.innerHTML = roleOptionsAll;
+
+      const newHrGovSelect = document.getElementById('new-hr-gov');
+      if (newHrGovSelect) newHrGovSelect.innerHTML = govOptionsAll;
+
+      const newHrRoleSelect = document.getElementById('new-hr-role');
+      if (newHrRoleSelect) newHrRoleSelect.innerHTML = roleOptionsAll;
 
       const manualCommSelect = document.getElementById('m-committee');
       if (manualCommSelect) {
@@ -1037,59 +1180,6 @@
       if (manualGovSelect) {
         manualGovSelect.innerHTML = state.governorates.map(g => `<option value="${g}">${g}</option>`).join('');
       }
-    }
-
-    function renderGovernoratesManager() {
-      const container = document.getElementById('governorates-list-container');
-      if (!container) return;
-
-      container.innerHTML = state.governorates.map(gov => {
-        const count = state.evaluations.filter(e => e.governorate === gov).length;
-        const safeName = gov.replace(/'/g, "\\'");
-        return `
-          <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-2">
-            <div>
-              <p class="text-xs sm:text-sm font-extrabold text-white">${gov}</p>
-              <span class="text-[10px] text-slate-400">${count} تقييم</span>
-            </div>
-            <button type="button" onclick="deleteGovernorate('${safeName}')" class="px-2 py-1 rounded-lg bg-rose-600/15 hover:bg-rose-600/30 text-rose-300 text-[11px] font-bold transition">
-              حذف
-            </button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function handleAddGovernorate(e) {
-      e.preventDefault();
-      const input = document.getElementById('new-gov-name');
-      const name = input.value.trim();
-      if (!name) return;
-
-      if (state.governorates.includes(name)) {
-        playTone('error');
-        showToast('هذه المحافظة مسجلة بالفعل!', 'error');
-        return;
-      }
-
-      state.governorates.push(name);
-      addAuditLog(`إضافة محافظة جديدة: ${name}`);
-      saveState();
-      syncCommitteeDropdowns();
-      renderGovernoratesManager();
-      input.value = '';
-      playTone('success');
-      showToast(`تمت إضافة محافظة "${name}" بنجاح!`, 'success');
-    }
-
-    function deleteGovernorate(govName) {
-      state.governorates = state.governorates.filter(g => g !== govName);
-      addAuditLog(`حذف محافظة: ${govName}`);
-      saveState();
-      syncCommitteeDropdowns();
-      renderGovernoratesManager();
-      playTone('click');
-      showToast(`تم حذف محافظة "${govName}".`, 'info');
     }
 
     // Tone.js Sound Effects & Toast UI
@@ -1127,7 +1217,7 @@
       toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border shadow-2xl text-xs sm:text-sm font-bold flex items-center justify-between gap-3 animate-in ${colors[type] || colors.info}`;
       toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()" class="text-white/60 hover:text-white">✕</button>`;
       container.appendChild(toast);
-      setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
+      setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4200);
     }
 
     // Authentication & View Navigation
@@ -1146,22 +1236,24 @@
         : 'py-3 px-4 rounded-xl text-sm font-extrabold transition text-slate-300 hover:text-white hover:bg-white/5';
     }
 
+    // Member Login: Name + Member ID Only
     function handleMemberLogin(e) {
       e.preventDefault();
+      const inputName = document.getElementById('login-member-name').value.trim();
       const id = document.getElementById('login-member-id').value.trim();
-      const pin = document.getElementById('login-member-pin').value.trim();
 
       const memberRecords = state.evaluations.filter(ev => String(ev.memberId) === id);
       if (memberRecords.length === 0) {
         playTone('error');
-        showToast('رقم العضوية غير مسجل في النظام! تأكد من الرقم أو راجع الـ HR.', 'error');
+        showToast('رقم العضوية غير مسجل في النظام! تأكد من الرقم أو راجع مسؤول الـ HR.', 'error');
         return;
       }
 
-      const validPin = memberRecords.some(ev => String(ev.pin) === pin);
-      if (!validPin) {
+      const normInput = normalizeArabicName(inputName);
+      const matched = memberRecords.some(ev => normalizeArabicName(ev.name) === normInput);
+      if (!matched) {
         playTone('error');
-        showToast('كود التحقق السري غير صحيح!', 'error');
+        showToast('الاسم لا يطابق رقم العضوية المسجل! تأكد من كتابة اسمك كما هو مسجل بالاتحاد.', 'error');
         return;
       }
 
@@ -1171,24 +1263,35 @@
       openMemberDashboard();
     }
 
+    // HR Login: Matched against Registered HR Accounts & Access Codes
     function handleHrLogin(e) {
       e.preventDefault();
-      const govEl = document.getElementById('login-hr-gov');
-      const govScope = govEl ? govEl.value : 'ALL';
+      const govScope = document.getElementById('login-hr-gov').value;
       const role = document.getElementById('login-hr-role').value;
-      const name = document.getElementById('login-hr-name').value.trim();
       const pass = document.getElementById('login-hr-pass').value.trim();
 
-      if (pass !== 'HR2025' && pass !== '123456') {
+      const matchedAccount = state.hrAccounts.find(acc =>
+        acc.govScope === govScope &&
+        acc.role === role &&
+        String(acc.code) === pass
+      );
+
+      if (!matchedAccount) {
         playTone('error');
-        showToast('كود الإدارة غير صحيح!', 'error');
+        showToast('كود الدخول غير صحيح أو لا يطابق المحافظة واللجنة المختارة!', 'error');
         return;
       }
 
-      state.currentUser = { type: 'hr', name, role, govScope };
+      state.currentUser = {
+        type: 'hr',
+        name: matchedAccount.name,
+        role: matchedAccount.role,
+        govScope: matchedAccount.govScope
+      };
+
       playTone('success');
       const scopeLabel = govScope === 'ALL' ? 'جميع المحافظات' : `محافظة ${govScope}`;
-      showToast(`تم تسجيل الدخول بنجاح (${scopeLabel} - ${role})`, 'success');
+      showToast(`مرحباً ${matchedAccount.name} (${scopeLabel} - ${role})`, 'success');
       openHrDashboard();
     }
 
@@ -1199,6 +1302,39 @@
       document.getElementById('hr-dashboard').classList.add('hidden');
       document.getElementById('logout-btn').classList.add('hidden');
       document.getElementById('login-view').classList.remove('hidden');
+    }
+
+    // Member Avatar Upload & Automatic Compression (Client-Side Canvas)
+    function handleMemberAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (!file || !state.currentUser || state.currentUser.type !== 'member') return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const size = 200;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+
+          // Center-crop square
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+          state.avatars[String(state.currentUser.memberId)] = compressedDataUrl;
+          saveState();
+          renderMemberSelectedMonth();
+          playTone('success');
+          showToast('تم تحديث صورتك الشخصية وحفظها في ملفك ولوحة الشرف!', 'success');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     // Member Dashboard Rendering & Smart Analysis
@@ -1228,6 +1364,17 @@
       const uid = document.getElementById('member-month-select').value;
       const record = state.evaluations.find(ev => ev.uid === uid);
       if (!record) return;
+
+      const avatarContainer = document.getElementById('m-avatar-container');
+      if (avatarContainer) {
+        const imgData = state.avatars && state.avatars[String(record.memberId)];
+        if (imgData) {
+          avatarContainer.innerHTML = `<img src="${imgData}" alt="${record.name}" class="w-full h-full object-cover" />`;
+        } else {
+          const initial = (String(record.name || 'ع').trim()[0] || 'ع');
+          avatarContainer.innerHTML = `<span class="text-3xl sm:text-4xl font-black text-amber-300">${initial}</span>`;
+        }
+      }
 
       document.getElementById('m-badge-id').textContent = `ID: ${record.memberId}`;
       document.getElementById('m-badge-gov').textContent = `محافظة ${record.governorate}`;
@@ -1380,8 +1527,8 @@
         pool = pool.filter(ev => ev.governorate === currentRecord.governorate);
         subtitle.textContent = `أعلى الأعضاء تقييماً في محافظة ${currentRecord.governorate} (شهر ${currentRecord.month})`;
       } else {
-        pool = pool.filter(ev => ev.committee === currentRecord.committee);
-        subtitle.textContent = `أعلى الأعضاء تقييماً في لجنة ${currentRecord.committee} (شهر ${currentRecord.month})`;
+        pool = pool.filter(ev => ev.governorate === currentRecord.governorate && ev.committee === currentRecord.committee);
+        subtitle.textContent = `أعلى الأعضاء تقييماً في لجنة ${currentRecord.committee} - ${currentRecord.governorate} (شهر ${currentRecord.month})`;
       }
 
       const top3 = [...pool]
@@ -1402,18 +1549,22 @@
       grid.innerHTML = top3.map((member, idx) => {
         const st = rankStyles[idx] || rankStyles[2];
         const isMe = String(member.memberId) === String(currentRecord.memberId);
+        const avatarHtml = getAvatarHtml(member.memberId, member.name, 'w-12 h-12 text-base');
         return `
           <div class="p-4 rounded-2xl border ${st.border} flex flex-col justify-between gap-3 transition hover:scale-[1.01]">
             <div class="flex items-center justify-between gap-2">
               <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black ${st.badge}">${st.medal}</span>
               <span class="text-sm font-black text-amber-300">${member.totalScore} / 100</span>
             </div>
-            <div>
-              <p class="text-sm sm:text-base font-black text-white flex items-center gap-1.5">
-                <span>${member.name}</span>
-                ${isMe ? '<span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px]">أنت</span>' : ''}
-              </p>
-              <p class="text-xs text-slate-400 mt-0.5">${member.committee} &bull; ${member.governorate}</p>
+            <div class="flex items-center gap-3">
+              ${avatarHtml}
+              <div>
+                <p class="text-sm sm:text-base font-black text-white flex items-center gap-1.5">
+                  <span>${member.name}</span>
+                  ${isMe ? '<span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px]">أنت</span>' : ''}
+                </p>
+                <p class="text-xs text-slate-400 mt-0.5">${member.committee} &bull; ${member.governorate}</p>
+              </div>
             </div>
           </div>
         `;
@@ -1507,7 +1658,7 @@
       `).join('');
     }
 
-    // HR Dashboard Navigation & Audit Logging
+    // HR Dashboard Navigation & Strict Role Scoping
     function addAuditLog(actionText) {
       const now = new Date();
       const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
@@ -1515,9 +1666,48 @@
         time: `اليوم - ${timeStr}`,
         actor: state.currentUser ? state.currentUser.name : 'HR Admin',
         role: state.currentUser ? state.currentUser.role : 'HR',
+        govScope: state.currentUser ? state.currentUser.govScope : 'ALL',
         action: actionText
       });
-      if (state.logs.length > 50) state.logs.pop();
+      if (state.logs.length > 80) state.logs.pop();
+    }
+
+    function applyHrScopeLocks() {
+      const central = isCentralHr();
+      const commScope = getHrCommitteeScope();
+      const govScope = state.currentUser ? state.currentUser.govScope : 'ALL';
+
+      // Show/Hide Central-only controls
+      const structureTabBtn = document.getElementById('hr-tab-btn-committees');
+      if (structureTabBtn) structureTabBtn.classList.toggle('hidden', !central);
+
+      const centralBestSection = document.getElementById('central-best-board-section');
+      if (centralBestSection) centralBestSection.classList.toggle('hidden', !central);
+
+      const clearLogsBtn = document.getElementById('clear-logs-btn');
+      if (clearLogsBtn) clearLogsBtn.classList.toggle('hidden', !central);
+
+      // Lock Manual Entry Form fields to HR's exact Governorate and Committee
+      const mGov = document.getElementById('m-gov');
+      const mComm = document.getElementById('m-committee');
+
+      if (mGov) {
+        if (govScope && govScope !== 'ALL') {
+          mGov.value = govScope;
+          mGov.disabled = true;
+        } else {
+          mGov.disabled = false;
+        }
+      }
+
+      if (mComm) {
+        if (commScope) {
+          mComm.value = commScope;
+          mComm.disabled = true;
+        } else {
+          mComm.disabled = false;
+        }
+      }
     }
 
     function openHrDashboard() {
@@ -1530,26 +1720,23 @@
       document.getElementById('hr-badge-gov').textContent = state.currentUser.govScope === 'ALL' ? 'جميع المحافظات' : `محافظة ${state.currentUser.govScope}`;
       document.getElementById('hr-badge-name').textContent = state.currentUser.name;
 
-      if (state.currentUser.govScope && state.currentUser.govScope !== 'ALL') {
-        const mGov = document.getElementById('m-gov');
-        if (mGov) mGov.value = state.currentUser.govScope;
-      }
-
-      if (state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
-        const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
-        const mComm = document.getElementById('m-committee');
-        if (mComm) mComm.value = targetComm;
-      }
-
+      applyHrScopeLocks();
       updatePendingAppealsBadge();
       switchHrTab('upload');
     }
 
     function switchHrTab(tabName) {
+      if (tabName === 'committees' && !isCentralHr()) {
+        showToast('هذا القسم متاح فقط للـ Central HR / High Board.', 'error');
+        return;
+      }
+
       playTone('click');
       document.querySelectorAll('.hr-tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.hr-tab-btn').forEach(btn => {
-        btn.className = 'hr-tab-btn px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition flex items-center gap-1.5';
+        if (!btn.classList.contains('hidden')) {
+          btn.className = 'hr-tab-btn px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition flex items-center gap-1.5';
+        }
       });
 
       document.getElementById('hr-tab-' + tabName).classList.remove('hidden');
@@ -1557,15 +1744,153 @@
       activeBtn.className = 'hr-tab-btn px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white shadow-lg transition flex items-center gap-1.5';
 
       if (tabName === 'committees') {
+        renderHrAccountsManager();
         renderGovernoratesManager();
         renderCommitteesManager();
       } else if (tabName === 'analytics') {
         populateHrFilters();
         renderHrAnalytics();
+        renderCentralBestBoard();
         renderHrDirectory();
       } else if (tabName === 'appeals') {
         renderHrAppealsAndLogs();
       }
+    }
+
+    // Central HR Only: HR Accounts & Access Codes Management
+    function renderHrAccountsManager() {
+      const tbody = document.getElementById('hr-accounts-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = state.hrAccounts.map(acc => {
+        const isDefaultCentral = acc.id === 'HR-CENTRAL-01';
+        return `
+          <tr class="hover:bg-white/[0.03]">
+            <td class="py-2.5 px-3 font-bold text-white">${acc.name}</td>
+            <td class="py-2.5 px-3 text-slate-300">${acc.govScope === 'ALL' ? 'المركزية (الكل)' : acc.govScope}</td>
+            <td class="py-2.5 px-3 text-amber-300 font-semibold">${acc.role}</td>
+            <td class="py-2.5 px-3 font-mono text-emerald-300 font-bold">${acc.code}</td>
+            <td class="py-2.5 px-3 text-center">
+              ${isDefaultCentral
+                ? `<button type="button" onclick="editCentralHrCode()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 text-amber-300 font-bold transition">تعديل الكود</button>`
+                : `<button type="button" onclick="deleteHrAccount('${acc.id}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 hover:bg-rose-600/35 text-rose-300 font-bold transition">حذف</button>`
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function handleAddHrAccount(e) {
+      e.preventDefault();
+      if (!isCentralHr()) return;
+
+      const name = document.getElementById('new-hr-name').value.trim();
+      const govScope = document.getElementById('new-hr-gov').value;
+      const role = document.getElementById('new-hr-role').value;
+      const code = document.getElementById('new-hr-code').value.trim();
+
+      if (!name || !code) return;
+
+      const existingIdx = state.hrAccounts.findIndex(a => a.govScope === govScope && a.role === role);
+      if (existingIdx >= 0) {
+        state.hrAccounts[existingIdx].name = name;
+        state.hrAccounts[existingIdx].code = code;
+      } else {
+        state.hrAccounts.push({
+          id: 'HR-' + Date.now(),
+          name,
+          govScope,
+          role,
+          code
+        });
+      }
+
+      addAuditLog(`اعتماد حساب مسؤول HR: ${name} (${govScope} - ${role})`);
+      saveState();
+      renderHrAccountsManager();
+      document.getElementById('new-hr-name').value = '';
+      document.getElementById('new-hr-code').value = '';
+      playTone('success');
+      showToast(`تم حفظ واعتماد مسؤول الـ HR (${name}) بنجاح!`, 'success');
+    }
+
+    function editCentralHrCode() {
+      const central = state.hrAccounts.find(a => a.id === 'HR-CENTRAL-01');
+      if (!central) return;
+      document.getElementById('new-hr-name').value = central.name;
+      document.getElementById('new-hr-gov').value = 'ALL';
+      document.getElementById('new-hr-role').value = 'Central HR / High Board';
+      document.getElementById('new-hr-code').value = central.code;
+      showToast('تم تحميل بيانات المركزية في الخانات بالأعلى لتعديل الاسم أو الكود.', 'info');
+    }
+
+    function deleteHrAccount(accId) {
+      if (!isCentralHr()) return;
+      const target = state.hrAccounts.find(a => a.id === accId);
+      if (!target) return;
+      state.hrAccounts = state.hrAccounts.filter(a => a.id !== accId);
+      addAuditLog(`حذف صلاحية مسؤول HR: ${target.name}`);
+      saveState();
+      renderHrAccountsManager();
+      playTone('click');
+      showToast(`تم حذف صلاحية ${target.name}.`, 'info');
+    }
+
+    // Governorates & Committees Managers (Central HR Only)
+    function renderGovernoratesManager() {
+      const container = document.getElementById('governorates-list-container');
+      if (!container) return;
+
+      container.innerHTML = state.governorates.map(gov => {
+        const count = state.evaluations.filter(e => e.governorate === gov).length;
+        const safeName = gov.replace(/'/g, "\\'");
+        return `
+          <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-2">
+            <div>
+              <p class="text-xs sm:text-sm font-extrabold text-white">${gov}</p>
+              <span class="text-[10px] text-slate-400">${count} تقييم</span>
+            </div>
+            <button type="button" onclick="deleteGovernorate('${safeName}')" class="px-2 py-1 rounded-lg bg-rose-600/15 hover:bg-rose-600/30 text-rose-300 text-[11px] font-bold transition">
+              حذف
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleAddGovernorate(e) {
+      e.preventDefault();
+      if (!isCentralHr()) return;
+      const input = document.getElementById('new-gov-name');
+      const name = input.value.trim();
+      if (!name) return;
+
+      if (state.governorates.includes(name)) {
+        playTone('error');
+        showToast('هذه المحافظة مسجلة بالفعل!', 'error');
+        return;
+      }
+
+      state.governorates.push(name);
+      addAuditLog(`إضافة محافظة جديدة: ${name}`);
+      saveState();
+      syncCommitteeDropdowns();
+      renderGovernoratesManager();
+      input.value = '';
+      playTone('success');
+      showToast(`تمت إضافة محافظة "${name}" بنجاح!`, 'success');
+    }
+
+    function deleteGovernorate(govName) {
+      if (!isCentralHr()) return;
+      state.governorates = state.governorates.filter(g => g !== govName);
+      addAuditLog(`حذف محافظة: ${govName}`);
+      saveState();
+      syncCommitteeDropdowns();
+      renderGovernoratesManager();
+      playTone('click');
+      showToast(`تم حذف محافظة "${govName}".`, 'info');
     }
 
     function renderCommitteesManager() {
@@ -1591,6 +1916,7 @@
 
     function handleAddCommittee(e) {
       e.preventDefault();
+      if (!isCentralHr()) return;
       const input = document.getElementById('new-committee-name');
       const name = input.value.trim();
       if (!name) return;
@@ -1612,6 +1938,7 @@
     }
 
     function deleteCommittee(commName) {
+      if (!isCentralHr()) return;
       if (state.committees.length <= 1) {
         showToast('يجب الإبقاء على لجنة واحدة على الأقل.', 'error');
         return;
@@ -1626,6 +1953,7 @@
     }
 
     function clearAllEvaluationsForProduction() {
+      if (!isCentralHr()) return;
       state.evaluations = [];
       state.appeals = [];
       resetManualForm();
@@ -1638,35 +1966,47 @@
       renderHrDirectory();
       renderHrAppealsAndLogs();
       playTone('success');
-      showToast('تم تصفير قاعدة البيانات وتفريغ الخانات بنجاح!', 'success');
+      showToast('تم تصفير قاعدة البيانات بالكامل بنجاح!', 'success');
     }
 
     function deleteEvaluationRecord(uid) {
       const target = state.evaluations.find(e => e.uid === uid);
       if (!target) return;
+
+      // Enforce scope check before deletion
+      const govScope = state.currentUser ? state.currentUser.govScope : 'ALL';
+      const commScope = getHrCommitteeScope();
+      if ((govScope !== 'ALL' && target.governorate !== govScope) || (commScope && target.committee !== commScope)) {
+        playTone('error');
+        showToast('غير مصرح لك بحذف عضو خارج نطاق لجنتك أو محافظتك!', 'error');
+        return;
+      }
+
       state.evaluations = state.evaluations.filter(e => e.uid !== uid);
       if (document.getElementById('m-id')?.value.trim() === String(target.memberId)) {
         resetManualForm();
       }
-      addAuditLog(`حذف تقييم العضو: ${target.name} (شهر ${target.month})`);
+      addAuditLog(`حذف تقييم العضو: ${target.name} (${target.committee} - شهر ${target.month})`);
       saveState();
       populateHrFilters();
       renderHrAnalytics();
+      renderCentralBestBoard();
       renderHrDirectory();
       playTone('click');
-      showToast(`تم حذف تقييم ${target.name} (${target.month}) وتصفير بياناته.`, 'info');
+      showToast(`تم حذف تقييم ${target.name} (${target.month}) بنجاح.`, 'info');
     }
 
     function updatePendingAppealsBadge() {
-      const pending = state.appeals.filter(a => a.status === 'pending').length;
+      const scopedAppeals = getScopedAppeals();
+      const pending = scopedAppeals.filter(a => a.status === 'pending').length;
       document.getElementById('pending-appeals-count').textContent = pending;
     }
 
-    // Real Excel Template Generator & Parser (SheetJS)
+    // Smart Pre-filled Excel Template Generator & Scope-Protected Parser
     function downloadExcelTemplate() {
       playTone('success');
       const headers = [
-        'رقم العضوية', 'كود الدخول', 'اسم العضو', 'اللجنة', 'المحافظة', 'الشهر',
+        'رقم العضوية', 'اسم العضو', 'اللجنة', 'المحافظة', 'الشهر',
         'مسؤول التقييم', 'رئيس اللجنة بالمحافظة', 'رئيس اللجنة المركزية',
         'اجتماعات_1', 'اجتماعات_2', 'اجتماعات_3', 'اجتماعات_4',
         'جروب_1', 'جروب_2', 'جروب_3', 'جروب_4',
@@ -1679,12 +2019,49 @@
         'ملاحظات'
       ];
 
-      const ws = XLSX.utils.aoa_to_sheet([headers]);
+      // Pre-fill unique existing members within the HR's scope so they don't re-type names every month
+      const scoped = getScopedEvaluations();
+      const uniqueMembersMap = new Map();
+      scoped.forEach(ev => {
+        uniqueMembersMap.set(String(ev.memberId), ev);
+      });
+
+      const sheetRows = [headers];
+      uniqueMembersMap.forEach(m => {
+        sheetRows.push([
+          m.memberId,
+          m.name,
+          m.committee,
+          m.governorate,
+          '', // Leave Month blank for the new month
+          state.currentUser ? state.currentUser.name : (m.evaluator || ''),
+          m.govHead || '',
+          m.centralHead || '',
+          0, 0, 0, 0,
+          0, 0, 0, 0,
+          0, 0, 0, 0,
+          0, 0, 0, 0,
+          0, 0, 0, 0,
+          0, 0, 0, 0,
+          0, 0, 0, 0,
+          0, 0, 0, 0,
+          ''
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(sheetRows);
       ws['!cols'] = headers.map(() => ({ wch: 16 }));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'تقييمات_الأعضاء');
-      XLSX.writeFile(wb, 'قالب_تقييم_اعضاء_تحيا_مصر.xlsx');
-      showToast('تم تحميل قالب الإكسيل الفارغ بنجاح!', 'success');
+
+      const commTag = getHrCommitteeScope() || 'المركزية';
+      XLSX.writeFile(wb, `قالب_تقييم_${commTag}.xlsx`);
+
+      if (uniqueMembersMap.size > 0) {
+        showToast(`تم تحميل القالب مملوءاً ببيانات ${uniqueMembersMap.size} عضو مسجل مسبقاً!`, 'success');
+      } else {
+        showToast('تم تحميل قالب الإكسيل الجاهز بنجاح!', 'success');
+      }
     }
 
     function handleExcelUpload(event) {
@@ -1697,7 +2074,7 @@
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: 'array' });
           const sheetName = workbook.SheetNames[0];
-          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: 0 });
+          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
 
           if (!rows || rows.length === 0) {
             playTone('error');
@@ -1705,13 +2082,18 @@
             return;
           }
 
+          const govScope = state.currentUser ? state.currentUser.govScope : 'ALL';
+          const commScope = getHrCommitteeScope();
+
           const parsed = rows.map(r => {
             const memberId = String(r['رقم العضوية'] || r['ID'] || '').trim();
-            const name = String(r['اسم العضو'] || r['الاسم'] || '').trim();
-            const committee = String(r['اللجنة'] || 'Training and Development').trim();
-            const governorate = String(r['المحافظة'] || 'القاهرة').trim();
-            const month = String(r['الشهر'] || 'أكتوبر').trim();
-            const pin = String(r['كود الدخول'] || '').trim() || memberId;
+            // Auto-lookup existing member record to auto-fill missing name/committee/gov
+            const existingMember = state.evaluations.find(ev => String(ev.memberId) === memberId);
+
+            const name = String(r['اسم العضو'] || r['الاسم'] || (existingMember ? existingMember.name : '')).trim();
+            const committee = String(r['اللجنة'] || (commScope || (existingMember ? existingMember.committee : 'Training and Development'))).trim();
+            const governorate = String(r['المحافظة'] || (govScope !== 'ALL' ? govScope : (existingMember ? existingMember.governorate : 'القاهرة'))).trim();
+            const month = String(r['الشهر'] || '').trim();
 
             const scores = {
               attMeetings: [Number(r['اجتماعات_1'] || 0), Number(r['اجتماعات_2'] || 0), Number(r['اجتماعات_3'] || 0), Number(r['اجتماعات_4'] || 0)],
@@ -1725,23 +2107,31 @@
             };
 
             const totalScore = Object.values(scores).flat().reduce((a, b) => a + (Number(b) || 0), 0);
-            const isValid = Boolean(memberId && name);
+
+            let errorReason = '';
+            if (!memberId || !name) errorReason = 'بيانات ناقصة';
+            else if (!month) errorReason = 'الشهر غير محدد';
+            else if (govScope !== 'ALL' && governorate !== govScope) errorReason = 'خارج محافظتك';
+            else if (commScope && committee !== commScope) errorReason = 'خارج لجنتك';
+            else if (existingMember && (existingMember.committee !== committee || existingMember.governorate !== governorate)) {
+              errorReason = 'الرقم مسجل بلجنة أخرى';
+            }
 
             return {
               uid: `${memberId}_${month}`,
               memberId,
-              pin,
               name,
               committee,
               governorate,
               month,
               evaluator: String(r['مسؤول التقييم'] || (state.currentUser ? state.currentUser.name : 'مسؤول التقييم')),
-              govHead: String(r['رئيس اللجنة بالمحافظة'] || 'غير محدد'),
-              centralHead: String(r['رئيس اللجنة المركزية'] || 'غير محدد'),
+              govHead: String(r['رئيس اللجنة بالمحافظة'] || (existingMember ? existingMember.govHead : 'غير محدد')),
+              centralHead: String(r['رئيس اللجنة المركزية'] || (existingMember ? existingMember.centralHead : 'غير محدد')),
               scores,
               totalScore,
               notes: String(r['ملاحظات'] || ''),
-              isValid
+              isValid: errorReason === '',
+              errorReason
             };
           });
 
@@ -1762,16 +2152,17 @@
       const summary = document.getElementById('excel-preview-summary');
 
       const validCount = state.pendingExcelRows.filter(r => r.isValid).length;
-      summary.textContent = `تمت قراءة ${state.pendingExcelRows.length} صف (${validCount} سجل صحيح جاهز للنشر)`;
+      const invalidCount = state.pendingExcelRows.length - validCount;
+      summary.textContent = `تمت قراءة ${state.pendingExcelRows.length} صف (${validCount} سجل سليم جاهز للنشر${invalidCount > 0 ? `، و ${invalidCount} مرفوض لتجاوز الصلاحية أو نقص البيانات` : ''})`;
 
       tbody.innerHTML = state.pendingExcelRows.map(r => `
         <tr class="${r.isValid ? '' : 'bg-rose-950/40'}">
-          <td class="py-2.5 px-3">${r.isValid ? '<span class="text-emerald-400 font-bold">✓ سليم</span>' : '<span class="text-rose-400 font-bold">✕ ناقص</span>'}</td>
+          <td class="py-2.5 px-3">${r.isValid ? '<span class="text-emerald-400 font-bold">✓ مطابق</span>' : `<span class="text-rose-400 font-bold">✕ ${r.errorReason}</span>`}</td>
           <td class="py-2.5 px-3 font-mono">${r.memberId || '-'}</td>
           <td class="py-2.5 px-3 font-bold text-white">${r.name || 'بدون اسم'}</td>
           <td class="py-2.5 px-3">${r.committee}</td>
           <td class="py-2.5 px-3">${r.governorate}</td>
-          <td class="py-2.5 px-3">${r.month}</td>
+          <td class="py-2.5 px-3">${r.month || '-'}</td>
           <td class="py-2.5 px-3 text-center font-black text-amber-300">${r.totalScore}</td>
         </tr>
       `).join('');
@@ -1788,17 +2179,20 @@
     function commitExcelData() {
       const validRows = state.pendingExcelRows.filter(r => r.isValid);
       if (validRows.length === 0) {
-        showToast('لا توجد سجلات صحيحة لاعتمادها!', 'error');
+        showToast('لا توجد سجلات سليمة ضمن نطاقك لاعتمادها!', 'error');
         return;
       }
 
       validRows.forEach(newRec => {
         delete newRec.isValid;
-        if (newRec.committee && !state.committees.some(c => c.toLowerCase() === newRec.committee.toLowerCase())) {
-          state.committees.push(newRec.committee);
-        }
-        if (newRec.governorate && !state.governorates.includes(newRec.governorate)) {
-          state.governorates.push(newRec.governorate);
+        delete newRec.errorReason;
+        if (isCentralHr()) {
+          if (newRec.committee && !state.committees.some(c => c.toLowerCase() === newRec.committee.toLowerCase())) {
+            state.committees.push(newRec.committee);
+          }
+          if (newRec.governorate && !state.governorates.includes(newRec.governorate)) {
+            state.governorates.push(newRec.governorate);
+          }
         }
         const idx = state.evaluations.findIndex(ev => ev.uid === newRec.uid);
         if (idx >= 0) {
@@ -1809,6 +2203,7 @@
       });
 
       syncCommitteeDropdowns();
+      applyHrScopeLocks();
       addAuditLog(`رفع واعتماد ملف Excel (${validRows.length} تقييم)`);
       saveState();
       cancelExcelPreview();
@@ -1816,7 +2211,7 @@
       showToast(`تم نشر وتحديث ${validRows.length} تقييم بنجاح!`, 'success');
     }
 
-    // Manual Single Evaluation Form
+    // Manual Single Evaluation Form + Auto-Fill by Member ID
     function buildManualMatrix() {
       const tbody = document.getElementById('manual-matrix-tbody');
       tbody.innerHTML = CRITERIA_ROWS.map(row => `
@@ -1829,6 +2224,24 @@
           `).join('')}
         </tr>
       `).join('');
+    }
+
+    function handleManualIdAutoFill(idVal) {
+      const id = String(idVal || '').trim();
+      if (!id) return;
+      const existing = state.evaluations.find(ev => String(ev.memberId) === id);
+      if (existing) {
+        const nameInput = document.getElementById('m-name');
+        if (nameInput && !nameInput.value.trim()) {
+          nameInput.value = existing.name;
+        }
+        if (existing.govHead && !document.getElementById('m-gov-head').value.trim()) {
+          document.getElementById('m-gov-head').value = existing.govHead;
+        }
+        if (existing.centralHead && !document.getElementById('m-central-head').value.trim()) {
+          document.getElementById('m-central-head').value = existing.centralHead;
+        }
+      }
     }
 
     function recalcManualTotal() {
@@ -1847,16 +2260,32 @@
         inp.value = 0;
       });
       recalcManualTotal();
+      applyHrScopeLocks();
     }
 
     function handleManualSave(e) {
       e.preventDefault();
       const memberId = document.getElementById('m-id').value.trim();
-      const pin = document.getElementById('m-pin').value.trim() || memberId;
       const name = document.getElementById('m-name').value.trim();
       const month = document.getElementById('m-month').value;
-      const committee = document.getElementById('m-committee').value;
-      const governorate = document.getElementById('m-gov').value;
+
+      const govScope = state.currentUser ? state.currentUser.govScope : 'ALL';
+      const commScope = getHrCommitteeScope();
+
+      const committee = commScope || document.getElementById('m-committee').value;
+      const governorate = (govScope && govScope !== 'ALL') ? govScope : document.getElementById('m-gov').value;
+
+      // Prevent duplicate Member ID across different committees or governorates
+      const conflictMember = state.evaluations.find(ev =>
+        String(ev.memberId) === memberId &&
+        (ev.committee !== committee || ev.governorate !== governorate)
+      );
+      if (conflictMember) {
+        playTone('error');
+        showToast(`رقم العضوية (${memberId}) مسجل بالفعل للعضو "${conflictMember.name}" في لجنة ${conflictMember.committee} (${conflictMember.governorate})!`, 'error');
+        return;
+      }
+
       const govHead = document.getElementById('m-gov-head').value.trim();
       const centralHead = document.getElementById('m-central-head').value.trim();
       const notes = document.getElementById('m-notes').value.trim();
@@ -1873,7 +2302,6 @@
       const record = {
         uid,
         memberId,
-        pin,
         name,
         committee,
         governorate,
@@ -1890,31 +2318,46 @@
       if (idx >= 0) state.evaluations[idx] = record;
       else state.evaluations.push(record);
 
-      addAuditLog(`حفظ/تعديل تقييم العضو: ${name} (${memberId}) - شهر ${month}`);
+      addAuditLog(`حفظ/تعديل تقييم العضو: ${name} (${memberId}) - ${committee} - شهر ${month}`);
       saveState();
       resetManualForm();
       playTone('success');
       showToast(`تم حفظ تقييم ${name} لشهر ${month} بنجاح!`, 'success');
     }
 
-    // HR Analytics, Filters & Excel Export
+    // Scoped Queries for Evaluations & Appeals
     function getScopedEvaluations() {
       if (!state.currentUser) return state.evaluations;
       let list = state.evaluations;
       if (state.currentUser.govScope && state.currentUser.govScope !== 'ALL') {
         list = list.filter(e => e.governorate === state.currentUser.govScope);
       }
-      if (state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
-        const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
-        list = list.filter(e => e.committee === targetComm);
+      const commScope = getHrCommitteeScope();
+      if (commScope) {
+        list = list.filter(e => e.committee === commScope);
       }
       return list;
+    }
+
+    function getScopedAppeals() {
+      return state.appeals.filter(a => {
+        if (!state.currentUser) return true;
+        if (state.currentUser.govScope && state.currentUser.govScope !== 'ALL' && a.governorate && a.governorate !== state.currentUser.govScope) {
+          return false;
+        }
+        const commScope = getHrCommitteeScope();
+        if (commScope && a.committee && a.committee !== commScope) {
+          return false;
+        }
+        return true;
+      });
     }
 
     function populateHrFilters() {
       const govSelect = document.getElementById('hr-filter-gov');
       const commSelect = document.getElementById('hr-filter-committee');
       const monthSelect = document.getElementById('hr-filter-month');
+      const centralMonthSelect = document.getElementById('central-best-month-filter');
 
       const scoped = getScopedEvaluations();
       const govs = [...new Set([...state.governorates, ...scoped.map(e => e.governorate)])];
@@ -1927,14 +2370,144 @@
         govSelect.innerHTML = `<option value="ALL">كل المحافظات</option>` + govs.map(g => `<option value="${g}">${g}</option>`).join('');
       }
 
-      if (state.currentUser && state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
-        const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
-        commSelect.innerHTML = `<option value="${targetComm}">${targetComm}</option>`;
+      const commScope = getHrCommitteeScope();
+      if (commScope) {
+        commSelect.innerHTML = `<option value="${commScope}">${commScope}</option>`;
       } else {
         commSelect.innerHTML = `<option value="ALL">كل اللجان</option>` + committees.map(c => `<option value="${c}">${c}</option>`).join('');
       }
 
       monthSelect.innerHTML = `<option value="ALL">كل الشهور</option>` + months.map(m => `<option value="${m}">${m}</option>`).join('');
+
+      if (centralMonthSelect) {
+        const allMonths = [...new Set(state.evaluations.map(e => e.month))];
+        centralMonthSelect.innerHTML = `<option value="ALL">أعلى تقييم إجمالاً (كل الشهور)</option>` +
+          allMonths.map(m => `<option value="${m}">شهر ${m}</option>`).join('');
+      }
+    }
+
+    // Central HR Only: Best of Every Committee & Every Governorate
+    function renderCentralBestBoard() {
+      if (!isCentralHr()) return;
+
+      const monthFilter = document.getElementById('central-best-month-filter')?.value || 'ALL';
+      const pool = monthFilter === 'ALL'
+        ? state.evaluations
+        : state.evaluations.filter(e => e.month === monthFilter);
+
+      const commGrid = document.getElementById('central-best-committees-grid');
+      const govGrid = document.getElementById('central-best-govs-grid');
+
+      if (commGrid) {
+        commGrid.innerHTML = state.committees.map(comm => {
+          const members = pool.filter(e => e.committee === comm)
+            .sort((a, b) => Number(b.totalScore || 0) - Number(a.totalScore || 0));
+          const top = members[0];
+          if (!top) {
+            return `
+              <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10">
+                <span class="text-xs font-extrabold text-slate-400 block">${comm}</span>
+                <p class="text-xs text-slate-500 mt-1">لا توجد تقييمات مسجلة بعد</p>
+              </div>
+            `;
+          }
+          return `
+            <div class="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/10 to-slate-900/90 border border-amber-500/30 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5 min-w-0">
+                ${getAvatarHtml(top.memberId, top.name, 'w-11 h-11 text-sm')}
+                <div class="truncate">
+                  <span class="text-[11px] font-extrabold text-amber-300 block">${comm}</span>
+                  <p class="text-sm font-black text-white truncate">${top.name}</p>
+                  <span class="text-[11px] text-slate-400">محافظة ${top.governorate} &bull; ${top.month}</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-amber-400 text-slate-950 font-black text-xs shrink-0">${top.totalScore}/100</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (govGrid) {
+        govGrid.innerHTML = state.governorates.map(gov => {
+          const members = pool.filter(e => e.governorate === gov)
+            .sort((a, b) => Number(b.totalScore || 0) - Number(a.totalScore || 0));
+          const top = members[0];
+          if (!top) {
+            return `
+              <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10">
+                <span class="text-xs font-extrabold text-slate-400 block">محافظة ${gov}</span>
+                <p class="text-xs text-slate-500 mt-1">لا توجد تقييمات مسجلة بعد</p>
+              </div>
+            `;
+          }
+          return `
+            <div class="p-3.5 rounded-2xl bg-gradient-to-br from-rose-600/15 to-slate-900/90 border border-rose-500/30 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5 min-w-0">
+                ${getAvatarHtml(top.memberId, top.name, 'w-11 h-11 text-sm')}
+                <div class="truncate">
+                  <span class="text-[11px] font-extrabold text-rose-300 block">محافظة ${gov}</span>
+                  <p class="text-sm font-black text-white truncate">${top.name}</p>
+                  <span class="text-[11px] text-slate-400">${top.committee} &bull; ${top.month}</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-rose-500 text-white font-black text-xs shrink-0">${top.totalScore}/100</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function exportCentralBestReport() {
+      if (!isCentralHr()) return;
+      const monthFilter = document.getElementById('central-best-month-filter')?.value || 'ALL';
+      const pool = monthFilter === 'ALL'
+        ? state.evaluations
+        : state.evaluations.filter(e => e.month === monthFilter);
+
+      const rows = [];
+      state.committees.forEach(comm => {
+        const top = pool.filter(e => e.committee === comm)
+          .sort((a, b) => Number(b.totalScore || 0) - Number(a.totalScore || 0))[0];
+        if (top) {
+          rows.push({
+            'التصنيف': `أول لجنة ${comm}`,
+            'رقم العضوية': top.memberId,
+            'اسم العضو': top.name,
+            'اللجنة': top.committee,
+            'المحافظة': top.governorate,
+            'الشهر': top.month,
+            'الدرجة': top.totalScore
+          });
+        }
+      });
+
+      state.governorates.forEach(gov => {
+        const top = pool.filter(e => e.governorate === gov)
+          .sort((a, b) => Number(b.totalScore || 0) - Number(a.totalScore || 0))[0];
+        if (top) {
+          rows.push({
+            'التصنيف': `أول محافظة ${gov}`,
+            'رقم العضوية': top.memberId,
+            'اسم العضو': top.name,
+            'اللجنة': top.committee,
+            'المحافظة': top.governorate,
+            'الشهر': top.month,
+            'الدرجة': top.totalScore
+          });
+        }
+      });
+
+      if (rows.length === 0) {
+        showToast('لا توجد تقييمات لتصدير كشف الأوائل حالياً.', 'error');
+        return;
+      }
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'أوائل_اللجان_والمحافظات');
+      XLSX.writeFile(wb, 'كشف_اوائل_اتحاد_طلاب_تحيا_مصر.xlsx');
+      playTone('success');
+      showToast('تم تصدير كشف أوائل اللجان والمحافظات بنجاح!', 'success');
     }
 
     function renderHrAnalytics() {
@@ -2028,10 +2601,16 @@
         const bestCrown = index < 3 && Number(ev.totalScore) >= 85
           ? `<span class="mr-1.5 px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black">Best #${index + 1}</span>`
           : '';
+        const avatar = getAvatarHtml(ev.memberId, ev.name, 'w-8 h-8 text-xs');
         return `
           <tr class="hover:bg-white/[0.03] transition">
             <td class="py-3 px-3 font-mono text-slate-300">${ev.memberId}</td>
-            <td class="py-3 px-3 font-bold text-white">${ev.name}${bestCrown}</td>
+            <td class="py-3 px-3 font-bold text-white">
+              <div class="flex items-center gap-2.5">
+                ${avatar}
+                <span>${ev.name}${bestCrown}</span>
+              </div>
+            </td>
             <td class="py-3 px-3 text-slate-300">${ev.committee}</td>
             <td class="py-3 px-3 text-slate-400">${ev.governorate}</td>
             <td class="py-3 px-3 text-amber-300 font-semibold">${ev.month}</td>
@@ -2059,7 +2638,6 @@
 
       switchHrTab('manual');
       document.getElementById('m-id').value = rec.memberId;
-      document.getElementById('m-pin').value = rec.pin;
       document.getElementById('m-name').value = rec.name;
       document.getElementById('m-month').value = rec.month;
       document.getElementById('m-committee').value = rec.committee;
@@ -2073,6 +2651,7 @@
         inp.value = arr[Number(inp.dataset.week)] ?? 0;
       });
       recalcManualTotal();
+      applyHrScopeLocks();
       showToast(`تم تحميل بيانات ${rec.name} للتعديل.`, 'info');
     }
 
@@ -2102,60 +2681,59 @@
       showToast('تم تصدير التقرير بنجاح!', 'success');
     }
 
-    // HR Appeals & Audit Log Rendering
+    // HR Appeals & Scoped Audit Log Rendering
     function renderHrAppealsAndLogs() {
       const appealsContainer = document.getElementById('hr-appeals-list');
-      const scopedAppeals = state.appeals.filter(a => {
-        if (!state.currentUser) return true;
-        if (state.currentUser.govScope && state.currentUser.govScope !== 'ALL' && a.governorate && a.governorate !== state.currentUser.govScope) {
-          return false;
-        }
-        if (state.currentUser.role && state.currentUser.role.startsWith('HR لجنة ')) {
-          const targetComm = state.currentUser.role.replace('HR لجنة ', '').trim();
-          if (a.committee && a.committee !== targetComm) return false;
-        }
-        return true;
-      });
+      const scopedAppeals = getScopedAppeals();
 
       if (scopedAppeals.length === 0) {
-        appealsContainer.innerHTML = `<p class="text-xs text-slate-400">لا توجد التماسات مقدمة حالياً.</p>`;
+        appealsContainer.innerHTML = `<p class="text-xs text-slate-400">لا توجد التماسات مقدمة في نطاقك حالياً.</p>`;
       } else {
-        appealsContainer.innerHTML = scopedAppeals.map(a => `
-          <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2.5 text-xs">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-extrabold text-white">${a.memberName} (ID: ${a.memberId}) - <span class="text-amber-300">${a.committee}</span></span>
-              <div class="flex items-center gap-2">
-                <span class="text-slate-400">${a.createdAt}</span>
-                <button type="button" onclick="deleteAppeal('${a.id}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 font-bold transition flex items-center gap-1" title="حذف الالتماس نهائياً عند الجميع">
-                  <span>حذف</span>
-                </button>
+        appealsContainer.innerHTML = scopedAppeals.map(a => {
+          const avatar = getAvatarHtml(a.memberId, a.memberName, 'w-8 h-8 text-xs');
+          return `
+            <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2.5 text-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  ${avatar}
+                  <span class="font-extrabold text-white">${a.memberName} (ID: ${a.memberId}) - <span class="text-amber-300">${a.committee}</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-400">${a.createdAt}</span>
+                  <button type="button" onclick="deleteAppeal('${a.id}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 font-bold transition flex items-center gap-1" title="حذف الالتماس">
+                    <span>حذف</span>
+                  </button>
+                </div>
               </div>
+              <p class="text-slate-300"><strong class="text-rose-300">[${a.month} / ${a.week} - ${a.criterion}]:</strong> ${a.message}</p>
+              ${a.status === 'resolved'
+                ? `<div class="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-200 font-bold">✓ تم الرد: ${a.hrReply}</div>`
+                : `<div class="flex gap-2">
+                    <input id="reply-input-${a.id}" type="text" placeholder="اكتب رد الـ HR أو نتيجة المراجعة..." class="glass-input flex-1 px-3 py-2 rounded-xl" />
+                    <button onclick="resolveAppeal('${a.id}')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shrink-0">إرسال الرد</button>
+                  </div>`
+              }
             </div>
-            <p class="text-slate-300"><strong class="text-rose-300">[${a.month} / ${a.week} - ${a.criterion}]:</strong> ${a.message}</p>
-            ${a.status === 'resolved'
-              ? `<div class="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-200 font-bold">✓ تم الرد: ${a.hrReply}</div>`
-              : `<div class="flex gap-2">
-                  <input id="reply-input-${a.id}" type="text" placeholder="اكتب رد الـ HR أو نتيجة المراجعة..." class="glass-input flex-1 px-3 py-2 rounded-xl" />
-                  <button onclick="resolveAppeal('${a.id}')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shrink-0">إرسال الرد</button>
-                </div>`
-            }
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       const logContainer = document.getElementById('hr-audit-log-list');
-      if (state.logs.length === 0) {
+      const central = isCentralHr();
+      const visibleLogs = central
+        ? state.logs
+        : state.logs.filter(l => l.actor === state.currentUser?.name);
+
+      if (visibleLogs.length === 0) {
         logContainer.innerHTML = `<p class="text-xs text-slate-400">لا توجد عمليات مسجلة في السجل بعد.</p>`;
       } else {
-        logContainer.innerHTML = state.logs.map((l, idx) => `
+        logContainer.innerHTML = visibleLogs.map((l, idx) => `
           <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-xs space-y-1">
             <div class="flex items-center justify-between gap-2 text-slate-400">
-              <span class="font-bold text-amber-300">${l.actor}</span>
+              <span class="font-bold text-amber-300">${l.actor} <span class="text-[10px] text-slate-500">(${l.role || ''})</span></span>
               <div class="flex items-center gap-2">
                 <span>${l.time}</span>
-                <button type="button" onclick="deleteSingleAuditLog(${idx})" class="px-2 py-0.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 text-[11px] font-bold transition" title="حذف هذا السطر">
-                  حذف
-                </button>
+                ${central ? `<button type="button" onclick="deleteSingleAuditLog(${idx})" class="px-2 py-0.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 text-[11px] font-bold transition">حذف</button>` : ''}
               </div>
             </div>
             <p class="text-slate-200">${l.action}</p>
@@ -2165,6 +2743,7 @@
     }
 
     function deleteSingleAuditLog(index) {
+      if (!isCentralHr()) return;
       state.logs.splice(index, 1);
       saveState();
       renderHrAppealsAndLogs();
@@ -2173,6 +2752,7 @@
     }
 
     function clearAllAuditLogs() {
+      if (!isCentralHr()) return;
       state.logs = [];
       saveState();
       renderHrAppealsAndLogs();
@@ -2206,12 +2786,12 @@
       if (!target) return;
 
       state.appeals = state.appeals.filter(a => a.id !== appealId);
-      addAuditLog(`حذف التماس العضو ${target.memberName} (${target.id}) نهائياً`);
+      addAuditLog(`حذف التماس العضو ${target.memberName} (${target.id})`);
       saveState();
       updatePendingAppealsBadge();
       renderHrAppealsAndLogs();
       playTone('click');
-      showToast(`تم حذف التماس ${target.memberName} نهائياً من النظام.`, 'info');
+      showToast(`تم حذف التماس ${target.memberName} من النظام.`, 'info');
     }
 
     // Initialize App on Window Load
